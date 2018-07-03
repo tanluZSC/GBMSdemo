@@ -1,0 +1,10 @@
+C:\Users\Administrator\Desktop\GBMS\GBMS\bin\Debug\GBMS.exe.config
+C:\Users\Administrator\Desktop\GBMS\GBMS\bin\Debug\GBMS.exe
+C:\Users\Administrator\Desktop\GBMS\GBMS\bin\Debug\GBMS.pdb
+C:\Users\Administrator\Desktop\GBMS\GBMS\obj\Debug\GBMS.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Desktop\GBMS\GBMS\obj\Debug\GBMS.Form1.resources
+C:\Users\Administrator\Desktop\GBMS\GBMS\obj\Debug\GBMS.Properties.Resources.resources
+C:\Users\Administrator\Desktop\GBMS\GBMS\obj\Debug\GBMS.csproj.GenerateResource.Cache
+C:\Users\Administrator\Desktop\GBMS\GBMS\obj\Debug\GBMS.exe
+C:\Users\Administrator\Desktop\GBMS\GBMS\obj\Debug\GBMS.pdb
+C:\Users\Administrator\Desktop\GBMS\GBMS\bin\Debug\GBMSAPI_NET.dll
