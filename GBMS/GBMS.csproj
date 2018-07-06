@@ -59,6 +59,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UTILITY\GBMSAPI_Example_DevNameStrings.cs" />
+    <Compile Include="UTILITY\GBMSAPI_Example_Globals.cs" />
+    <Compile Include="UTILITY\GBMSAPI_Example_Util.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
