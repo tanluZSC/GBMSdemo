@@ -41,30 +41,7 @@ namespace GBMS
         private void button1_Click(object sender, EventArgs e)
         {
 
-            GBMSAPI_Example_Globals.InitGlobalAcqOptions();
-            Boolean res = this.GetAcquisitionOptions(
-               out GBMSAPI_Example_Globals.ObjToScan,
-               out GBMSAPI_Example_Globals.OptionMask,
-               out GBMSAPI_Example_Globals.DisplayOptionMask,
-               out GBMSAPI_Example_Globals.ContrastLimitToDisplay,
-               out GBMSAPI_Example_Globals.CompletenessLimitToDisplay,
-               out GBMSAPI_Example_Globals.ClipRegionW,
-               out GBMSAPI_Example_Globals.ClipRegionH,
-               out GBMSAPI_Example_Globals.RollPreviewTimeout,
-               out GBMSAPI_Example_Globals.ArtefactCleaningDepth,
-               out GBMSAPI_Example_Globals.ContrastIntermediateLimitToDisplay,
-               out GBMSAPI_Example_Globals.CompletenessIntermediateLimitToDisplay,
-               out GBMSAPI_Example_Globals.IsRollAreaStandardGa,
-               // ver 3.2.0.0
-               out GBMSAPI_Example_Globals.RollBlockCompositionIsEnabled,
-               // end ver 3.2.0.0
-               // ver 4.0.0.0
-               out GBMSAPI_Example_Globals.HwFfdThresholdToBeSet,
-               out GBMSAPI_Example_Globals.SwFfdThresholdToBeSet
-               // ver 4.0.0.0
-               );
-            //初始化
-            DSInit(COINIT_APARTMENTTHREADED, false);
+            
 
         }
 
@@ -84,17 +61,11 @@ namespace GBMS
         out uint RollPreviewTimeout,
         out Byte ArtefactCleaningDepth,
         out Byte ContrastIntermediateLimitToDisplay,
-        out Byte CompletenessIntermediateLimitToDisplay,
-        // ver 2.10.0.0
-        out bool RollAreaStandardGa,
-        // end ver 2.10.0.0
-        // ver 3.2.0.0
+        out Byte CompletenessIntermediateLimitToDisplay,        
+        out bool RollAreaStandardGa,      
         out bool EnableRollCompositionBlock,
-        // end ver 3.2.0.0
-        // ver 4.0.0.0
         out int HwFfdStrictnessThreshold,
-        out int SwFfdStrictnessThreshold)
-        // end ver 4.0.0.0
+        out int SwFfdStrictnessThreshold)    
         {
             ObjToScan = 0;
             OptionMask = 0;
@@ -107,23 +78,13 @@ namespace GBMS
             ArtefactCleaningDepth = 0;
             ContrastIntermediateLimitToDisplay = 0;
             CompletenessIntermediateLimitToDisplay = 0;
-            RollAreaStandardGa = false;
-            // ver 3.2.0.0
-            EnableRollCompositionBlock = false;
-            // end ver 3.2.0.0
-            // ver 4.0.0.0
+            RollAreaStandardGa = false;           
+            EnableRollCompositionBlock = false;            
             HwFfdStrictnessThreshold = -1;
-            SwFfdStrictnessThreshold = -1;
-            // end ver 4.0.0.0
-
-            try
-            {
-                // ver 2.10.0.0
-                /////////////////////////////
-                // ROLL AREA STANDARD
-                /////////////////////////////
-              
-                    RollAreaStandardGa = true;
+            SwFfdStrictnessThreshold = -1;            
+           
+                //滚指的GA标准有效化                          
+                RollAreaStandardGa = true;
                 
                
                 // end ver 2.10.0.0
@@ -133,281 +94,83 @@ namespace GBMS
                 String ObjToScanName = (String)(this.ObjectToScanComboBox.SelectedItem);
                 ObjToScan = GBMSAPI_Example_Util.GetObjectToScanIDFromName(ObjToScanName);
 
-                /////////////////////////////
-                // GET OPTION MASK
-                /////////////////////////////
-                uint dummyFrOpt;
-                GetOptionMask(out OptionMask, out dummyFrOpt);
-
-                /////////////////////////////////////
-                // GET DISPLAY OPTION MASK
-                /////////////////////////////////////
-                DisplayOptionMask = 0;
-
-                uint ExternalDevicesMask;
-                int RetVal = GBMSAPI_NET_DeviceCharacteristicsRoutines.GBMSAPI_NET_GetOptionalExternalEquipment(out ExternalDevicesMask);
-
-                if (RetVal != GBMSAPI_NET_ErrorCodes.GBMSAPI_NET_ERROR_CODE_NO_ERROR)
-                {
-                    GBMSAPI_Example_Util.GBMSAPI_Example_ManageErrors(
-                        RetVal, "GetAcquisitionOptions,GBMSAPI_NET_GetOptionalExternalEquipment");
-                    return false;
-                }
-
-                if ((ExternalDevicesMask & GBMSAPI_NET_OptionalExternalEquipment.GBMSAPI_NET_OED_VUI_LCD) != 0)
-                {
-                    // Stop screen after acquisition
-                   
-                        (DisplayOptionMask) |= GBMSAPI_NET_DisplayOptions.GBMSAPI_NET_DO_FINAL_SCREEN;                    
-                    // customized contrast
-                    
-                        // read limit value
-                     
-                            Byte ContrastLimit = Byte.Parse(this.label1.Text);
-                            ContrastLimitToDisplay = ContrastLimit;                                                                       
-                            (DisplayOptionMask) |= GBMSAPI_NET_DisplayOptions.GBMSAPI_NET_DO_CUSTOMIZED_CONTRAST;
-                    }
-
-                    // customized completeness
-                    if (this.ShowCustomizedCompletenessCheckBox.Enabled == true && this.ShowCustomizedCompletenessCheckBox.Checked == true)
-                    {
-                        // read limit value
-                        try
-                        {
-                            Byte CompletenessLimit = Byte.Parse(this.CompletenessLimitTextBox.Text);
-                            CompletenessLimitToDisplay = CompletenessLimit;
-                        }
-                        catch (Exception ReadEx)
-                        {
-                            if ((ReadEx.GetType()).ToString() == ((new ArgumentNullException()).GetType()).ToString() ||
-                                (ReadEx.GetType()).ToString() == ((new FormatException()).GetType()).ToString() ||
-                                (ReadEx.GetType()).ToString() == ((new OverflowException()).GetType()).ToString()
-                                )
-                            {
-                                // default value
-                                CompletenessLimitToDisplay = 90;
-                            }
-                            else
-                            {
-                                MessageBox.Show("Exception in GetAcquisitionOptions: " + ReadEx.Message);
-                                ObjToScan = 0;
-                                OptionMask = 0;
-                                DisplayOptionMask = 0;
-                                ContrastLimitToDisplay = 0;
-                                CompletenessLimitToDisplay = 0;
-                                ClipRegionW = 0;
-                                ClipRegionH = 0;
-                                RollPreviewTimeout = 0;
-                                ArtefactCleaningDepth = 0;
-                                return false;
-                            }
-                        }
-                        (DisplayOptionMask) |= GBMSAPI_NET_DisplayOptions.GBMSAPI_NET_DO_CUSTOMIZED_COMPLETENESS;
-                    }
-                }
-                #region 获取裁剪数据
-                ///////////////////////////////////////
-                // GET CLIP DATA
-                ///////////////////////////////////////
-                ClipRegionW = 0;
-                ClipRegionH = 0;
-                if (this.ClipEnableCheckBox.Enabled == true &&
-                    this.ClipEnableCheckBox.Checked == true)
-                {
-                    // read clip values
-                    try
-                    {
-                        UInt32 ClipSizeX = UInt32.Parse(this.ClipRegionSizeXTextBox.Text);
-                        UInt32 ClipSizeY = UInt32.Parse(this.ClipRegionSizeYTextBox.Text);
-                        ClipRegionW = ClipSizeX;
-                        ClipRegionH = ClipSizeY;
-                    }
-                    catch (Exception ReadEx)
-                    {
-                        if ((ReadEx.GetType()).ToString() == ((new ArgumentNullException()).GetType()).ToString() ||
-                            (ReadEx.GetType()).ToString() == ((new FormatException()).GetType()).ToString() ||
-                            (ReadEx.GetType()).ToString() == ((new OverflowException()).GetType()).ToString()
-                            )
-                        {
-                            // default value
-                            ClipRegionW = 0;
-                            ClipRegionH = 0;
-                        }
-                        else
-                        {
-                            MessageBox.Show("Exception in GetAcquisitionOptions: " + ReadEx.Message);
-                            ObjToScan = 0;
-                            OptionMask = 0;
-                            DisplayOptionMask = 0;
-                            ContrastLimitToDisplay = 0;
-                            CompletenessLimitToDisplay = 0;
-                            ClipRegionW = 0;
-                            ClipRegionH = 0;
-                            RollPreviewTimeout = 0;
-                            ArtefactCleaningDepth = 0;
-                            return false;
-                        }
-                    }
-                }
-                #endregion
-                ///////////////////////////////////////////
-                // GET ROLL OPTIONS
-                ///////////////////////////////////////////
-                // Roll Preview Timeout
+              
                 RollPreviewTimeout = 0;
-                if (this.AutomaticRollPreviewTimeoutTextBox.Enabled == true)
-                {
-                    // read timeout
-                    try
-                    {
-                        UInt32 Timeout = UInt32.Parse(this.AutomaticRollPreviewTimeoutTextBox.Text);
-                        RollPreviewTimeout = Timeout;
-                    }
-                    catch (Exception ReadEx)
-                    {
-                        if ((ReadEx.GetType()).ToString() == ((new ArgumentNullException()).GetType()).ToString() ||
-                            (ReadEx.GetType()).ToString() == ((new FormatException()).GetType()).ToString() ||
-                            (ReadEx.GetType()).ToString() == ((new OverflowException()).GetType()).ToString()
-                            )
-                        {
-                            // default value
-                            RollPreviewTimeout = 0;
-                        }
-                        else
-                        {
-                            MessageBox.Show("Exception in GetAcquisitionOptions: " + ReadEx.Message);
-                            ObjToScan = 0;
-                            OptionMask = 0;
-                            DisplayOptionMask = 0;
-                            ContrastLimitToDisplay = 0;
-                            CompletenessLimitToDisplay = 0;
-                            ClipRegionW = 0;
-                            ClipRegionH = 0;
-                            RollPreviewTimeout = 0;
-                            ArtefactCleaningDepth = 0;
-                            return false;
-                        }
-                    }
-                }
-                // Artefact Cleaning Depth
-                ArtefactCleaningDepth = 0;
-                if (this.ArtefactCleaningDepthTextBox.Enabled == true)
-                {
-                    // read Clean Depth
-                    try
-                    {
-                        Byte CleanDepth = Byte.Parse(this.ArtefactCleaningDepthTextBox.Text);
-                        if (CleanDepth > GBMSAPI_NET_CleaningDepth.GBMSAPI_NET_ARTEFACT_CLEANING_DEPTH_MAX &&
-                            CleanDepth != GBMSAPI_NET_CleaningDepth.GBMSAPI_NET_ARTEFACT_CLEANING_DEPTH_UNLIMITED)
-                        {
-                            MessageBox.Show("Clean depth greater than maximum allowed value; will be automatically set to max", "Warning");
-                            CleanDepth = GBMSAPI_NET_CleaningDepth.GBMSAPI_NET_ARTEFACT_CLEANING_DEPTH_MAX;
-                        }
-                        ArtefactCleaningDepth = CleanDepth;
-                    }
-                    catch (Exception ReadEx)
-                    {
-                        if ((ReadEx.GetType()).ToString() == ((new ArgumentNullException()).GetType()).ToString() ||
-                            (ReadEx.GetType()).ToString() == ((new FormatException()).GetType()).ToString() ||
-                            (ReadEx.GetType()).ToString() == ((new OverflowException()).GetType()).ToString()
-                            )
-                        {
-                            // default value
-                            ArtefactCleaningDepth = 0;
-                        }
-                        else
-                        {
-                            MessageBox.Show("Exception in GetAcquisitionOptions: " + ReadEx.Message);
-                            ObjToScan = 0;
-                            OptionMask = 0;
-                            DisplayOptionMask = 0;
-                            ContrastLimitToDisplay = 0;
-                            CompletenessLimitToDisplay = 0;
-                            ClipRegionW = 0;
-                            ClipRegionH = 0;
-                            RollPreviewTimeout = 0;
-                            ArtefactCleaningDepth = 0;
-                            return false;
-                        }
-                    }
-                }
 
-                // ver 3.2.0.0
-                // EnableRollCompositionBlock
-                if (this.cbEnableRollCompositionBlock.Checked) EnableRollCompositionBlock = true;
-                // end ver 3.2.0.0
-
-                ///////////////////////////////////////////
-                // GET FFD OPTIONS
-                ///////////////////////////////////////////
-                // ver 4.0.0.0
-                if (this.gbHwFfdSettings.Enabled)
-                {
-                    if (this.rbHwFfdHighStrictness.Checked)
-                    {
-                        HwFfdStrictnessThreshold = GBMSAPI_NET_HwAntifakeStrictnessThresholds.GBMSAPI_NET_HW_ANTIFAKE_THRESHOLD_HIGH_STRICTNESS;
-                    }
-                    else if (this.rbHwFfdMediumStrictness.Checked)
-                    {
-                        HwFfdStrictnessThreshold = GBMSAPI_NET_HwAntifakeStrictnessThresholds.GBMSAPI_NET_HW_ANTIFAKE_THRESHOLD_MEDIUM_STRICTNESS;
-                    }
-                    else if (this.rbHwFfdLowStrictness.Checked)
-                    {
-                        HwFfdStrictnessThreshold = GBMSAPI_NET_HwAntifakeStrictnessThresholds.GBMSAPI_NET_HW_ANTIFAKE_THRESHOLD_LOW_STRICTNESS;
-                    }
-                    else if (this.rbHwFfdPersonalizedStrictness.Checked)
-                    {
-                        int dummyFfdStrictTh;
-                        if (int.TryParse(this.tbHwFfdPersonalizedStrictValue.Text, out dummyFfdStrictTh))
-                        {
-                            // ver 4.1.0: max value for hw ffd threshold set to 150
-                            if (dummyFfdStrictTh >= 10 && dummyFfdStrictTh <= 150)
-                            {
-                                HwFfdStrictnessThreshold = dummyFfdStrictTh;
-                            }
-                        }
-                    }
-                }
-                if (this.gbSwFfdSettings.Enabled)
-                {
-                    int dummyFfdStrictTh;
-                    if (int.TryParse(this.tbSwFfdThreshold.Text, out dummyFfdStrictTh))
-                    {
-                        if (dummyFfdStrictTh >= 0 && dummyFfdStrictTh <= 100)
-                        {
-                            SwFfdStrictnessThreshold = dummyFfdStrictTh;
-                        }
-                    }
-                }
-                // end ver 4.0.0.0
-
-                ///////////////////////////
-                //// RETURN OK
-                ///////////////////////////
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error in GetAcquisitionOptions function: " + ex.Message);
-                ObjToScan = 0;
-                OptionMask = 0;
-                DisplayOptionMask = 0;
-                ContrastLimitToDisplay = 0;
-                CompletenessLimitToDisplay = 0;
-                ClipRegionW = 0;
-                ClipRegionH = 0;
-                RollPreviewTimeout = 0;
-                ArtefactCleaningDepth = 0;
-                EnableRollCompositionBlock = false;
-
-                return false;
-            }
+            return false;
         }
 
 
     private void Form1_Load(object sender, EventArgs e)
         {
+            //UpdateListButton_Click(null, null);
+        }
 
+        private void getDevice_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UpdateListButton_Click(object sender, EventArgs e)
+        {
+            this.Enabled = true;
+            Cursor.Current = Cursors.WaitCursor;
+            Application.DoEvents();
+            try
+            {
+                this.DeviceTypeComboBox.Items.Clear();
+                ////////////////////////////////
+                ///// 获取设备列表存到数组中，最多存储127个设备。GBMSAPI_NET_MAX_PLUGGED_DEVICE_NUM=127常量
+                ////////////////////////////////
+                GBMSAPI_NET_DeviceInfoStruct[] AttachedDeviceList = new GBMSAPI_NET_DeviceInfoStruct[
+                    GBMSAPI_NET_DeviceInfoConstants.GBMSAPI_NET_MAX_PLUGGED_DEVICE_NUM];
+                 Console.WriteLine(GBMSAPI_NET_DeviceInfoConstants.GBMSAPI_NET_MAX_PLUGGED_DEVICE_NUM);
+                for (int i = 0; i < GBMSAPI_NET_DeviceInfoConstants.GBMSAPI_NET_MAX_PLUGGED_DEVICE_NUM; i++)
+                {
+                    AttachedDeviceList[i] = new GBMSAPI_NET_DeviceInfoStruct();
+                }
+
+                int AttachedDeviceNumber;
+                uint USBErrorCode;
+
+                 int RetVal = GBMSAPI_NET_DeviceSettingRoutines.GBMSAPI_NET_GetAttachedDeviceList(
+                     AttachedDeviceList, out AttachedDeviceNumber, out USBErrorCode);
+                Console.WriteLine(AttachedDeviceNumber);
+                if (RetVal != GBMSAPI_NET_ErrorCodes.GBMSAPI_NET_ERROR_CODE_NO_ERROR || AttachedDeviceNumber <= 0)
+                {
+                    if (RetVal != GBMSAPI_NET_ErrorCodes.GBMSAPI_NET_ERROR_CODE_NO_ERROR)
+                    {
+                        GBMSAPI_Example_Util.GBMSAPI_Example_ManageErrors(RetVal, USBErrorCode, "UpdateListButton_Click");
+                        MessageBox.Show("Error in GBMSAPI_NET_GetAttachedDeviceList function: " + RetVal);
+                    }
+                    return;
+                }
+                // Console.WriteLine(RetVal);
+                ////////////////////////////////
+                //// Store device list 存储设备列表
+                ////////////////////////////////
+                for (int i = 0; i < AttachedDeviceNumber; i++)
+                {
+                    String StrToAdd = GBMSAPI_Example_Util.GBMSAPI_Example_GetDevNameFromDevID(
+                        AttachedDeviceList[i].DeviceID);
+                    StrToAdd += " " + (AttachedDeviceList[i].DeviceSerialNumber);//获取设备型号
+                    this.DeviceTypeComboBox.Items.Add(StrToAdd);
+                }
+                if (AttachedDeviceNumber > 0)
+                {
+                    this.DeviceTypeComboBox.SelectedIndex = 0;//指定索引号为0
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error in UpdateListButton_Click function: " + ex.Message);
+                this.Close();
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+                this.Enabled = true;
+            }
         }
     }
 }

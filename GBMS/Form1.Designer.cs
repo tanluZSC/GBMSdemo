@@ -32,6 +32,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.ObjectToScanComboBox = new System.Windows.Forms.ComboBox();
+            this.UpdateListButton = new System.Windows.Forms.Button();
+            this.DeviceTypeComboBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -70,11 +72,31 @@
             this.ObjectToScanComboBox.Size = new System.Drawing.Size(121, 20);
             this.ObjectToScanComboBox.TabIndex = 3;
             // 
+            // UpdateListButton
+            // 
+            this.UpdateListButton.Location = new System.Drawing.Point(283, 301);
+            this.UpdateListButton.Name = "UpdateListButton";
+            this.UpdateListButton.Size = new System.Drawing.Size(75, 23);
+            this.UpdateListButton.TabIndex = 4;
+            this.UpdateListButton.Text = "获取设备";
+            this.UpdateListButton.UseVisualStyleBackColor = true;
+            this.UpdateListButton.Click += new System.EventHandler(this.UpdateListButton_Click);
+            // 
+            // DeviceTypeComboBox
+            // 
+            this.DeviceTypeComboBox.FormattingEnabled = true;
+            this.DeviceTypeComboBox.Location = new System.Drawing.Point(491, 107);
+            this.DeviceTypeComboBox.Name = "DeviceTypeComboBox";
+            this.DeviceTypeComboBox.Size = new System.Drawing.Size(121, 20);
+            this.DeviceTypeComboBox.TabIndex = 5;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(678, 356);
+            this.Controls.Add(this.DeviceTypeComboBox);
+            this.Controls.Add(this.UpdateListButton);
             this.Controls.Add(this.ObjectToScanComboBox);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label1);
@@ -94,6 +116,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ComboBox ObjectToScanComboBox;
+        private System.Windows.Forms.Button UpdateListButton;
+        private System.Windows.Forms.ComboBox DeviceTypeComboBox;
     }
 }
 
